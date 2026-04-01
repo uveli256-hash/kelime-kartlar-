@@ -39,14 +39,12 @@
       flex-shrink:0;position:relative;overflow:hidden;
     }
     .header-portrait{
-      position:absolute;left:50%;top:50%;
-      transform:translate(-50%,-50%);
-      height:260%;
-      object-fit:cover;
-      object-position:center 15%;
-      opacity:0.18;
+      position:absolute;
+      inset:0;
+      background:url('ataturk.png.jpg') center 10% / auto 300% no-repeat;
+      opacity:0.22;
       filter:brightness(0) invert(1);
-      pointer-events:none;user-select:none;
+      pointer-events:none;
     }
     .header-left{display:flex;align-items:center;gap:10px}
     .header-logo{
@@ -465,7 +463,7 @@
 
 <!-- HEADER -->
 <div class="header" id="main-header">
-  <img src="ataturk.png.jpg" class="header-portrait" alt="">
+  <div class="header-portrait"></div>
   <div class="header-left">
     <div class="header-logo">&#x1F4D6;</div>
     <div class="header-title">Kelime Kartlari</div>
