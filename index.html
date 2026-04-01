@@ -155,9 +155,9 @@
       box-shadow:0 12px 40px rgba(0,0,0,0.5);
     }
     .flip-card-front{
-      background:linear-gradient(145deg,#4a2fa0,#7c5af7);
-      border:2px solid rgba(160,132,255,0.5);
-      box-shadow:0 8px 32px rgba(124,90,247,0.5);
+      background:linear-gradient(145deg,#1a2a5e,#2a4aaa);
+      border:2px solid rgba(80,120,220,0.5);
+      box-shadow:0 8px 32px rgba(42,74,170,0.5);
     }
     .flip-card-front::before{
       content:'';position:absolute;
@@ -476,6 +476,23 @@
   </div>
   <div class="settings-body">
     <div class="settings-section">
+      <div class="settings-section-title">Veri Guvenligi</div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:8px">
+        <div style="font-size:0.8rem;color:var(--sub);margin-bottom:14px;line-height:1.5">
+          Verileriniz telefonda <strong style="color:var(--text)">2 ayri yerde</strong> saklanir (IndexedDB + LocalStorage). Ekstra guvenlik icin yedek alin.
+        </div>
+        <div style="display:flex;gap:10px">
+          <button onclick="exportData()" style="flex:1;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:0.85rem;font-weight:800;cursor:pointer">
+            &#128190; Yedek Al
+          </button>
+          <button onclick="importData()" style="flex:1;padding:13px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:0.85rem;font-weight:800;cursor:pointer">
+            &#128196; Geri Yukle
+          </button>
+        </div>
+        <div id="word-count-info" style="text-align:center;margin-top:12px;font-size:0.75rem;color:var(--sub)"></div>
+      </div>
+    </div>
+    <div class="settings-section">
       <div class="settings-section-title">Grup Yonetimi</div>
       <div id="group-manage-list"></div>
       <div class="add-group-row">
@@ -511,10 +528,10 @@
 
 <script>
 var GROUP_COLORS = ['gc0','gc1','gc2','gc3','gc4','gc5','gc6','gc7'];
+var DB_NAME = 'kelime-db', DB_STORE = 'data', DB_KEY = 'main';
+var db = null;
 
-function loadData(){
-  var d = localStorage.getItem('kelime-v2');
-  if(d) return JSON.parse(d);
+function defaultData(){
   return {
     groups:[
       {id:'g1',name:'Grup 1',ci:0},{id:'g2',name:'Grup 2',ci:1},
@@ -524,12 +541,97 @@ function loadData(){
     words:[], unknowns:[]
   };
 }
-function saveData(){ localStorage.setItem('kelime-v2', JSON.stringify(data)); }
 
-var data = loadData();
+/* IndexedDB aç */
+function openDB(cb){
+  var req = indexedDB.open(DB_NAME, 1);
+  req.onupgradeneeded = function(e){
+    e.target.result.createObjectStore(DB_STORE);
+  };
+  req.onsuccess = function(e){ db = e.target.result; cb(); };
+  req.onerror = function(){ cb(); };
+}
+
+/* IndexedDB'ye yaz */
+function idbSave(d){
+  if(!db) return;
+  var tx = db.transaction(DB_STORE,'readwrite');
+  tx.objectStore(DB_STORE).put(d, DB_KEY);
+}
+
+/* IndexedDB'den oku */
+function idbLoad(cb){
+  if(!db){ cb(null); return; }
+  var tx = db.transaction(DB_STORE,'readonly');
+  var req = tx.objectStore(DB_STORE).get(DB_KEY);
+  req.onsuccess = function(){ cb(req.result || null); };
+  req.onerror = function(){ cb(null); };
+}
+
+function saveData(){
+  localStorage.setItem('kelime-v2', JSON.stringify(data));
+  idbSave(data);
+}
+
+/* Yedek indir */
+function exportData(){
+  var json = JSON.stringify(data, null, 2);
+  var blob = new Blob([json],{type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'kelime-yedek.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 500);
+  showToast('Yedek alindi!','green');
+}
+
+/* Yedek geri yukle */
+function importData(){
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json,application/json';
+  input.onchange = function(){
+    var file = input.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      try{
+        var d = JSON.parse(e.target.result);
+        if(!d.groups||!d.words||!d.unknowns) throw new Error();
+        data = d;
+        saveData();
+        renderHome();
+        showToast(d.words.length+' kelime geri yuklendi!','green');
+      } catch(err){
+        showToast('Gecersiz dosya!','red');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+var data = defaultData();
 var currentGroup = null;
 var currentWords = [];
 var currentIndex = 0;
+
+/* INIT: once IndexedDB'yi dene, yoksa localStorage */
+openDB(function(){
+  idbLoad(function(idbData){
+    if(idbData && idbData.words){
+      data = idbData;
+      /* localStorage'a da yaz (senkron tut) */
+      localStorage.setItem('kelime-v2', JSON.stringify(data));
+    } else {
+      var ls = localStorage.getItem('kelime-v2');
+      if(ls){ data = JSON.parse(ls); idbSave(data); }
+    }
+    renderHome();
+  });
+});
 
 /* ---- HOME ---- */
 function renderHome(){
@@ -637,7 +739,7 @@ function renderCardMode(){
     '</div>'+
     '<div class="card-action-btns">'+
       (unk
-        ? '<button class="action-btn btn-known-card" onclick="markKnown()">&#10003;&nbsp; Bildim</button>'
+        ? '<button class="action-btn btn-known-card" onclick="markKnown()">'+(currentGroup==='unknowns'?'&#127919;&nbsp; Ogrendi - Cikar':'&#10003;&nbsp; Bildim')+'</button>'
         : '<button class="action-btn btn-unknown-card" onclick="markUnknown()">&#10060;&nbsp; Bilemedim</button>')+
     '</div>';
 
@@ -700,8 +802,15 @@ function markKnown(){
   var w = currentWords[currentIndex];
   data.unknowns = data.unknowns.filter(function(id){ return id!==w.id; });
   saveData(); renderHome();
-  showToast('Harika! Bildim', 'green');
-  setTimeout(nextCard, 400);
+  showToast('Ogrendi! Listeden cikarildi', 'green');
+  if(currentGroup==='unknowns'){
+    currentWords = getGroupWords();
+    if(currentWords.length===0){ renderCardMode(); return; }
+    if(currentIndex >= currentWords.length) currentIndex = currentWords.length-1;
+    setTimeout(renderCardMode, 400);
+  } else {
+    setTimeout(nextCard, 400);
+  }
 }
 
 /* ---- SWIPE ---- */
@@ -828,6 +937,8 @@ document.getElementById('inp-en').addEventListener('keydown',function(e){ if(e.k
 
 /* ---- SETTINGS ---- */
 function renderSettings(){
+  var el = document.getElementById('word-count-info');
+  if(el) el.textContent = 'Toplam '+data.words.length+' kelime · '+data.groups.length+' grup kayitli';
   var list = document.getElementById('group-manage-list');
   list.innerHTML = '';
   data.groups.forEach(function(g,idx){
@@ -886,8 +997,6 @@ function showToast(msg, type){
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 
-/* ---- INIT ---- */
-renderHome();
 if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(){});
 </script>
 </body>
