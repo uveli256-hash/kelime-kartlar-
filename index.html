@@ -28,7 +28,17 @@
       --radius:20px;
     }
     html,body{height:100%;overflow:hidden}
-    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;position:relative}
+    body::before{
+      content:'';
+      position:fixed;
+      inset:0;
+      background:url('https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Ataturk1930s.jpg/400px-Ataturk1930s.jpg') center/contain no-repeat;
+      opacity:0.045;
+      pointer-events:none;
+      z-index:0;
+    }
+    .page,.header{position:relative;z-index:1}
 
     /* HEADER */
     .header{
@@ -455,12 +465,12 @@
   <div class="scroll-area">
     <div class="top-action-row">
       <button class="top-action-btn daily-btn" onclick="openDaily()">
-        <div class="top-btn-icon">&#127775;</div>
+        <div class="top-btn-icon">&#x2615;</div>
         <div class="top-btn-label">Gunun Kelimeleri</div>
         <div class="top-btn-sub">50 karisik kelime</div>
       </button>
       <button class="top-action-btn unknown-top-btn" onclick="openUnknowns()">
-        <div class="top-btn-icon">&#10060;</div>
+        <div class="top-btn-icon">&#128293;</div>
         <div class="top-btn-label">Bilemediklerim</div>
         <div class="top-btn-sub" id="unknowns-count-label">0 kelime</div>
       </button>
