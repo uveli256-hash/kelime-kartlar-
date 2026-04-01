@@ -28,17 +28,7 @@
       --radius:20px;
     }
     html,body{height:100%;overflow:hidden}
-    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;position:relative}
-    body::before{
-      content:'';
-      position:fixed;
-      inset:0;
-      background:url('ataturk.png.jpg') center/contain no-repeat;
-      opacity:0.045;
-      pointer-events:none;
-      z-index:0;
-    }
-    .page,.header{position:relative;z-index:1}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
 
     /* HEADER */
     .header{
@@ -46,7 +36,14 @@
       padding:18px 18px 14px;
       display:flex;align-items:center;justify-content:space-between;
       border-bottom:1px solid var(--border);
-      flex-shrink:0;
+      flex-shrink:0;position:relative;overflow:hidden;
+    }
+    .header-portrait{
+      position:absolute;left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      height:110%;opacity:0.12;
+      filter:brightness(0) invert(1);
+      pointer-events:none;user-select:none;
     }
     .header-left{display:flex;align-items:center;gap:10px}
     .header-logo{
@@ -465,6 +462,7 @@
 
 <!-- HEADER -->
 <div class="header" id="main-header">
+  <img src="ataturk.png.jpg" class="header-portrait" alt="">
   <div class="header-left">
     <div class="header-logo">&#x1F4D6;</div>
     <div class="header-title">Kelime Kartlari</div>
