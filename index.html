@@ -46,7 +46,7 @@
       font-size:1.2rem;flex-shrink:0;
       box-shadow:0 4px 14px rgba(124,90,247,0.4);
     }
-    .header-title{font-size:1.05rem;font-weight:800;letter-spacing:0.3px}
+    .header-title{font-size:1.15rem;font-weight:700;letter-spacing:0.5px}
     .header-sub{font-size:0.68rem;color:var(--sub);margin-top:1px}
     .header-right{display:flex;gap:8px;align-items:center}
     .icon-btn{
@@ -63,15 +63,27 @@
     .scroll-area{padding:18px;flex:1}
 
     /* HOME */
-    .home-greeting{
-      background:linear-gradient(135deg,#1a1a2e,#22223a);
-      border:1px solid var(--border);border-radius:var(--radius);
-      padding:20px;margin-bottom:20px;
-      display:flex;align-items:center;gap:14px;
+    .top-action-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .top-action-btn{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:var(--radius);padding:18px 14px;
+      cursor:pointer;text-align:left;transition:transform 0.15s,border-color 0.2s;
+      position:relative;overflow:hidden;
     }
-    .home-greeting-icon{font-size:2.2rem}
-    .home-greeting-text h2{font-size:1rem;font-weight:700;color:var(--text)}
-    .home-greeting-text p{font-size:0.75rem;color:var(--sub);margin-top:3px}
+    .top-action-btn:active{transform:scale(0.96)}
+    .daily-btn{
+      background:linear-gradient(145deg,#1a1a3e,#252560);
+      border-color:rgba(124,90,247,0.4);
+    }
+    .daily-btn:hover{border-color:rgba(124,90,247,0.8);box-shadow:0 4px 20px rgba(124,90,247,0.25)}
+    .unknown-top-btn{
+      background:linear-gradient(145deg,#2a1520,#3a1a28);
+      border-color:rgba(255,77,109,0.4);
+    }
+    .unknown-top-btn:hover{border-color:rgba(255,77,109,0.8);box-shadow:0 4px 20px rgba(255,77,109,0.2)}
+    .top-btn-icon{font-size:1.6rem;margin-bottom:8px}
+    .top-btn-label{font-size:0.88rem;font-weight:800;color:var(--text);margin-bottom:3px}
+    .top-btn-sub{font-size:0.68rem;color:var(--sub)}
 
     .section-label{font-size:0.68rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding-left:2px}
     .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
@@ -183,6 +195,10 @@
     }
     .card-word{font-size:2.4rem;font-weight:800;line-height:1.2;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,0.3)}
     .card-word-tr{font-size:2.2rem;font-weight:800;line-height:1.2;color:#0a3d2e;text-shadow:0 2px 12px rgba(0,0,0,0.2)}
+    .card-example{margin-top:12px;text-align:center;width:100%}
+    .ex-en{font-size:0.78rem;color:rgba(255,255,255,0.75);font-style:italic;line-height:1.5;margin-bottom:4px}
+    .ex-tr{font-size:0.75rem;color:rgba(255,255,255,0.5);line-height:1.5}
+    .ex-loading{font-size:0.8rem;color:rgba(255,255,255,0.3);letter-spacing:3px}
     .card-hint{
       font-size:0.68rem;color:rgba(255,255,255,0.6);
       margin-top:14px;display:flex;align-items:center;gap:5px;
@@ -427,10 +443,7 @@
 <div class="header" id="main-header">
   <div class="header-left">
     <div class="header-logo">&#x1F4D6;</div>
-    <div>
-      <div class="header-title">Kelime Kartlari</div>
-      <div class="header-sub" id="h-sub">Grubunu sec</div>
-    </div>
+    <div class="header-title">Kelime Kartlari</div>
   </div>
   <div class="header-right">
     <button class="icon-btn" onclick="showPage('settings')" title="Ayarlar">&#9881;</button>
@@ -440,16 +453,20 @@
 <!-- HOME PAGE -->
 <div class="page active" id="page-home">
   <div class="scroll-area">
-    <div class="home-greeting">
-      <div class="home-greeting-icon">&#x2615;</div>
-      <div class="home-greeting-text">
-        <h2>Gunun Kelimeleri</h2>
-        <p>Bir grup sec ve ogrenmege basla</p>
-      </div>
+    <div class="top-action-row">
+      <button class="top-action-btn daily-btn" onclick="openDaily()">
+        <div class="top-btn-icon">&#127775;</div>
+        <div class="top-btn-label">Gunun Kelimeleri</div>
+        <div class="top-btn-sub">50 karisik kelime</div>
+      </button>
+      <button class="top-action-btn unknown-top-btn" onclick="openUnknowns()">
+        <div class="top-btn-icon">&#10060;</div>
+        <div class="top-btn-label">Bilemediklerim</div>
+        <div class="top-btn-sub" id="unknowns-count-label">0 kelime</div>
+      </button>
     </div>
     <div class="section-label">Gruplar</div>
     <div class="group-grid" id="group-grid"></div>
-    <div id="unknown-btn-container"></div>
   </div>
 </div>
 
@@ -460,7 +477,7 @@
     <div class="card-header-title" id="card-group-title"></div>
     <div class="card-header-actions">
       <button class="icon-btn" onclick="openListPanel()" title="Kelimeler">&#9776;</button>
-      <button class="icon-btn" onclick="openAddForm()" title="Kelime Ekle">&#43;</button>
+      <button class="icon-btn" id="card-add-btn" onclick="openAddForm()" title="Kelime Ekle">&#43;</button>
     </div>
   </div>
   <div class="card-mode-body" id="card-mode-body">
@@ -520,6 +537,8 @@
   <div class="add-form-title">Yeni Kelime Ekle</div>
   <div class="fg"><label>Ingilizce</label><input type="text" id="inp-en" placeholder="apple" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
   <div class="fg"><label>Turkce</label><input type="text" id="inp-tr" placeholder="elma" autocomplete="off" autocorrect="off" spellcheck="false"></div>
+  <div class="fg"><label>Ornek Cumle - EN (isteğe bagli)</label><input type="text" id="inp-ex" placeholder="I want to save money." autocomplete="off" spellcheck="false"></div>
+  <div class="fg"><label>Ornek Cumle - TR (isteğe bagli)</label><input type="text" id="inp-extr" placeholder="Para biriktirmek istiyorum." autocomplete="off" spellcheck="false"></div>
   <button class="save-btn" onclick="saveWord()">Kaydet</button>
 </div>
 <div class="overlay" id="form-overlay" onclick="closeAddForm()"></div>
@@ -654,19 +673,9 @@ function renderHome(){
     div.onclick = (function(id){ return function(){ openGroup(id); }; })(g.id);
     grid.appendChild(div);
   });
-
   var uc = data.unknowns.length;
-  var cont = document.getElementById('unknown-btn-container');
-  cont.innerHTML = '';
-  var udiv = document.createElement('div');
-  udiv.className = 'group-btn unknown-btn';
-  udiv.innerHTML =
-    '<div class="group-color-dot" style="background:var(--danger);flex-shrink:0"></div>'+
-    '<div class="group-name">Bilinmeyenler</div>'+
-    '<div class="group-count">'+uc+' kelime</div>'+
-    (uc>0?'<span class="group-badge">'+uc+'</span>':'');
-  udiv.onclick = function(){ openUnknowns(); };
-  cont.appendChild(udiv);
+  var lbl = document.getElementById('unknowns-count-label');
+  if(lbl) lbl.textContent = uc+' kelime';
 }
 
 /* ---- GROUP OPEN ---- */
@@ -674,20 +683,37 @@ function openGroup(gid){
   currentGroup = gid;
   var g = data.groups.find(function(x){ return x.id===gid; });
   document.getElementById('card-group-title').textContent = g.name;
-  document.getElementById('h-sub').textContent = g.name;
+  document.getElementById('card-add-btn').style.display='flex';
   loadCardMode();
   showPage('card');
 }
 function openUnknowns(){
   currentGroup = 'unknowns';
-  document.getElementById('card-group-title').textContent = 'Bilinmeyenler';
-  document.getElementById('h-sub').textContent = 'Bilinmeyenler';
+  document.getElementById('card-group-title').textContent = 'Bilemediklerim';
+  document.getElementById('card-add-btn').style.display='flex';
   loadCardMode();
+  showPage('card');
+}
+
+function openDaily(){
+  if(data.words.length===0){ showToast('Hic kelime yok!'); return; }
+  var all = data.words.slice();
+  for(var i=all.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=all[i]; all[i]=all[j]; all[j]=tmp;
+  }
+  currentGroup = 'daily';
+  currentWords = all.slice(0,50);
+  currentIndex = 0;
+  document.getElementById('card-group-title').textContent = 'Gunun Kelimeleri';
+  document.getElementById('card-add-btn').style.display='none';
+  renderCardMode();
   showPage('card');
 }
 
 function getGroupWords(){
   if(currentGroup==='unknowns') return data.words.filter(function(w){ return data.unknowns.indexOf(w.id)!==-1; });
+  if(currentGroup==='daily') return currentWords;
   return data.words.filter(function(w){ return w.gid===currentGroup; });
 }
 function isUnknown(wid){ return data.unknowns.indexOf(wid)!==-1; }
@@ -712,7 +738,6 @@ function renderCardMode(){
   }
   var w = currentWords[currentIndex];
   var pct = Math.round(((currentIndex+1)/currentWords.length)*100);
-  var unk = isUnknown(w.id);
 
   body.innerHTML =
     '<div class="card-progress">'+
@@ -724,11 +749,11 @@ function renderCardMode(){
         '<div class="flip-card-face flip-card-front">'+
           '<div class="card-lang-tag">EN</div>'+
           '<div class="card-word" id="cv-en">'+escHtml(w.en)+'</div>'+
-          '<div class="card-hint"><div class="hint-icon">&#x1F504;</div>Dokunun &mdash; Turkceye cevir</div>'+
         '</div>'+
         '<div class="flip-card-face flip-card-back">'+
           '<div class="card-lang-tag">TR</div>'+
           '<div class="card-word-tr" id="cv-tr">'+escHtml(w.tr)+'</div>'+
+          '<div class="card-example" id="cv-ex"></div>'+
         '</div>'+
       '</div>'+
     '</div>'+
@@ -738,12 +763,49 @@ function renderCardMode(){
       '<span>sonraki &#10095;</span>'+
     '</div>'+
     '<div class="card-action-btns">'+
-      (unk
-        ? '<button class="action-btn btn-known-card" onclick="markKnown()">'+(currentGroup==='unknowns'?'&#127919;&nbsp; Ogrendi - Cikar':'&#10003;&nbsp; Bildim')+'</button>'
+      (currentGroup==='unknowns'
+        ? '<button class="action-btn btn-known-card" onclick="markKnown()">&#127919;&nbsp; Ogrendi - Cikar</button>'
         : '<button class="action-btn btn-unknown-card" onclick="markUnknown()">&#10060;&nbsp; Bilemedim</button>')+
     '</div>';
 
   setupCardSwipe();
+  loadExample(w);
+}
+
+function loadExample(w){
+  var el = document.getElementById('cv-ex');
+  if(!el) return;
+  if(w.ex && w.extr){
+    el.innerHTML = '<div class="ex-en">'+escHtml(w.ex)+'</div><div class="ex-tr">'+escHtml(w.extr)+'</div>';
+    return;
+  }
+  el.innerHTML = '<div class="ex-loading">&#8230;</div>';
+  fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w.en))
+    .then(function(r){ return r.json(); })
+    .then(function(json){
+      var sentence = '';
+      try{
+        var meanings = json[0].meanings;
+        for(var i=0;i<meanings.length;i++){
+          var defs = meanings[i].definitions;
+          for(var j=0;j<defs.length;j++){
+            if(defs[j].example){ sentence = defs[j].example; break; }
+          }
+          if(sentence) break;
+        }
+      } catch(e){}
+      if(!sentence){ el.innerHTML=''; return; }
+      return fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(sentence)+'&langpair=en|tr')
+        .then(function(r2){ return r2.json(); })
+        .then(function(tr){
+          var trText = tr.responseData && tr.responseData.translatedText ? tr.responseData.translatedText : '';
+          w.ex = sentence; w.extr = trText;
+          saveData();
+          var el2 = document.getElementById('cv-ex');
+          if(el2) el2.innerHTML = '<div class="ex-en">'+escHtml(sentence)+'</div>'+(trText?'<div class="ex-tr">'+escHtml(trText)+'</div>':'');
+        });
+    })
+    .catch(function(){ var el2=document.getElementById('cv-ex'); if(el2) el2.innerHTML=''; });
 }
 
 function flipCard(){
@@ -921,11 +983,18 @@ function saveWord(){
   var en = document.getElementById('inp-en').value.trim();
   var tr = document.getElementById('inp-tr').value.trim();
   if(!en||!tr){ showToast('Ingilizce ve Turkce yazin!'); return; }
+  var ex = document.getElementById('inp-ex').value.trim();
+  var extr = document.getElementById('inp-extr').value.trim();
   var gid = (currentGroup==='unknowns') ? data.groups[0].id : currentGroup;
-  data.words.push({id:'w'+Date.now(), gid:gid, en:en, tr:tr});
+  var word = {id:'w'+Date.now(), gid:gid, en:en, tr:tr};
+  if(ex) word.ex = ex;
+  if(extr) word.extr = extr;
+  data.words.push(word);
   saveData();
   document.getElementById('inp-en').value='';
   document.getElementById('inp-tr').value='';
+  document.getElementById('inp-ex').value='';
+  document.getElementById('inp-extr').value='';
   document.getElementById('inp-en').focus();
   currentWords = getGroupWords();
   renderCardMode();
@@ -979,7 +1048,7 @@ function addGroup(){
 function showPage(name){
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.getElementById('page-'+name).classList.add('active');
-  if(name==='home'){ renderHome(); document.getElementById('h-sub').textContent='Grubunu sec'; }
+  if(name==='home') renderHome();
   if(name==='settings') renderSettings();
 }
 
