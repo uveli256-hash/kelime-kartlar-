@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+  <title>Kelime Kartlari</title>
+  <link rel="manifest" href="manifest.json"/>
+  <meta name="theme-color" content="#1c1714"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+    :root{
+      --bg:#1c1714;
+      --bg2:#221a16;
+      --card:#2e2319;
+      --card2:#382b1f;
+      --border:#4a3728;
+      --text:#f0e6d8;
+      --sub:#9a7d6b;
+      --accent:#d4874a;
+      --accent2:#e8a06a;
+      --danger:#c0544a;
+      --green:#7ab87a;
+      --yellow:#d4a84b;
+      --radius:20px;
+    }
+    html,body{height:100%;overflow:hidden}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column}
+
+    /* HEADER */
+    .header{
+      background:linear-gradient(160deg,#2e2319,#1c1714);
+      padding:18px 18px 14px;
+      display:flex;align-items:center;justify-content:space-between;
+      border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    .header-left{display:flex;align-items:center;gap:10px}
+    .header-logo{
+      width:38px;height:38px;border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.2rem;flex-shrink:0;
+      box-shadow:0 4px 14px rgba(212,135,74,0.35);
+    }
+    .header-title{font-size:1.05rem;font-weight:800;letter-spacing:0.3px}
+    .header-sub{font-size:0.68rem;color:var(--sub);margin-top:1px}
+    .header-right{display:flex;gap:8px;align-items:center}
+    .icon-btn{
+      background:var(--card);border:1px solid var(--border);
+      color:var(--text);width:38px;height:38px;border-radius:12px;
+      cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;
+      transition:background 0.15s,border-color 0.15s;
+    }
+    .icon-btn:active{background:var(--card2)}
+
+    /* PAGES */
+    .page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+    .page.active{display:flex;flex-direction:column}
+    .scroll-area{padding:18px;flex:1}
+
+    /* HOME */
+    .home-greeting{
+      background:linear-gradient(135deg,var(--card),var(--card2));
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:20px;margin-bottom:20px;
+      display:flex;align-items:center;gap:14px;
+    }
+    .home-greeting-icon{font-size:2.2rem}
+    .home-greeting-text h2{font-size:1rem;font-weight:700;color:var(--text)}
+    .home-greeting-text p{font-size:0.75rem;color:var(--sub);margin-top:3px}
+
+    .section-label{font-size:0.68rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;padding-left:2px}
+    .group-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .group-btn{
+      background:linear-gradient(145deg,var(--card),var(--card2));
+      border:1px solid var(--border);border-radius:var(--radius);
+      padding:20px 14px 18px;cursor:pointer;
+      transition:transform 0.15s,border-color 0.2s,box-shadow 0.2s;
+      position:relative;overflow:hidden;text-align:left;
+    }
+    .group-btn::before{
+      content:'';position:absolute;top:0;right:0;
+      width:70px;height:70px;border-radius:50%;
+      background:radial-gradient(circle,rgba(212,135,74,0.12),transparent 70%);
+      transform:translate(15px,-15px);
+    }
+    .group-btn:active{transform:scale(0.96);border-color:var(--accent)}
+    .group-btn:hover{border-color:rgba(212,135,74,0.5);box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+    .group-color-dot{width:10px;height:10px;border-radius:50%;margin-bottom:12px}
+    .group-name{font-size:0.95rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .group-count{font-size:0.7rem;color:var(--sub)}
+    .group-progress-bar{height:3px;border-radius:2px;background:var(--border);margin-top:10px;overflow:hidden}
+    .group-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--yellow));transition:width 0.4s}
+    .group-badge{position:absolute;top:10px;right:10px;background:var(--danger);color:#fff;font-size:0.6rem;font-weight:800;padding:2px 7px;border-radius:20px}
+
+    .unknown-btn{
+      background:linear-gradient(145deg,#281a19,#321f1e);
+      border:1px solid rgba(192,84,74,0.35) !important;
+      grid-column:1/-1;
+      display:flex;align-items:center;gap:14px;padding:16px 18px;
+    }
+    .unknown-btn .group-color-dot{width:12px;height:12px;background:var(--danger);flex-shrink:0;margin:0}
+    .unknown-btn .group-name{margin:0}
+    .unknown-btn .group-count{margin:0;margin-left:auto}
+
+    /* CARD MODE */
+    .card-header{
+      display:flex;align-items:center;gap:10px;padding:14px 18px;
+      border-bottom:1px solid var(--border);flex-shrink:0;
+      background:linear-gradient(160deg,#2e2319,#1c1714);
+    }
+    .back-btn{
+      background:var(--card);border:1px solid var(--border);
+      color:var(--text);width:38px;height:38px;border-radius:12px;
+      cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .card-header-title{flex:1;font-size:0.95rem;font-weight:700}
+    .card-header-actions{display:flex;gap:8px}
+
+    .card-mode-body{
+      flex:1;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      padding:20px 18px;gap:16px;overflow:hidden;
+    }
+
+    /* Progress dots */
+    .card-progress{display:flex;align-items:center;gap:6px;width:100%;justify-content:center}
+    .progress-text{font-size:0.8rem;color:var(--sub);font-weight:600}
+    .progress-bar-outer{flex:1;max-width:200px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+    .progress-bar-inner{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--yellow));transition:width 0.3s}
+
+    /* THE CARD */
+    .flip-card{
+      width:100%;max-width:380px;
+      aspect-ratio:3/2;
+      perspective:1000px;
+      cursor:pointer;user-select:none;
+    }
+    .flip-card-inner{
+      position:relative;width:100%;height:100%;
+      transform-style:preserve-3d;
+      transition:transform 0.55s cubic-bezier(0.4,0.2,0.2,1);
+    }
+    .flip-card.flipped .flip-card-inner{transform:rotateY(180deg)}
+    .flip-card-face{
+      position:absolute;width:100%;height:100%;
+      backface-visibility:hidden;-webkit-backface-visibility:hidden;
+      border-radius:24px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      padding:28px 24px;text-align:center;
+      box-shadow:0 12px 40px rgba(0,0,0,0.5);
+    }
+    .flip-card-front{
+      background:linear-gradient(145deg,#2e2319,#3d2e20);
+      border:1.5px solid var(--border);
+    }
+    .flip-card-front::before{
+      content:'';position:absolute;
+      top:-30px;right:-30px;
+      width:120px;height:120px;border-radius:50%;
+      background:radial-gradient(circle,rgba(212,135,74,0.18),transparent 65%);
+    }
+    .flip-card-back{
+      background:linear-gradient(145deg,#1e2e1e,#253325);
+      border:1.5px solid rgba(122,184,122,0.4);
+      transform:rotateY(180deg);
+    }
+    .flip-card-back::before{
+      content:'';position:absolute;
+      bottom:-30px;left:-30px;
+      width:120px;height:120px;border-radius:50%;
+      background:radial-gradient(circle,rgba(122,184,122,0.15),transparent 65%);
+    }
+    .card-lang-tag{
+      font-size:0.62rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+      opacity:0.5;margin-bottom:12px;
+    }
+    .card-word{font-size:2.2rem;font-weight:800;line-height:1.2;color:var(--text)}
+    .card-word-tr{font-size:2rem;font-weight:800;line-height:1.2;color:var(--green)}
+    .card-hint{
+      font-size:0.68rem;color:var(--sub);
+      margin-top:14px;display:flex;align-items:center;gap:5px;
+    }
+    .hint-icon{
+      width:22px;height:22px;border-radius:50%;
+      background:rgba(240,230,216,0.08);
+      display:flex;align-items:center;justify-content:center;
+      font-size:0.75rem;
+    }
+
+    /* Swipe hint */
+    .swipe-guide{
+      display:flex;align-items:center;justify-content:space-between;
+      width:100%;max-width:380px;
+      font-size:0.7rem;color:var(--sub);
+    }
+    .swipe-guide span{display:flex;align-items:center;gap:4px}
+
+    /* Unknown / Known buttons */
+    .card-action-btns{display:flex;gap:10px;width:100%;max-width:380px}
+    .action-btn{
+      flex:1;padding:14px;border-radius:14px;
+      font-size:0.85rem;font-weight:700;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;gap:6px;
+      transition:transform 0.1s,opacity 0.1s;
+      border:1.5px solid;
+    }
+    .action-btn:active{transform:scale(0.96)}
+    .btn-unknown-card{
+      background:rgba(192,84,74,0.12);
+      border-color:rgba(192,84,74,0.35);
+      color:var(--danger);
+    }
+    .btn-known-card{
+      background:rgba(122,184,122,0.12);
+      border-color:rgba(122,184,122,0.35);
+      color:var(--green);
+    }
+
+    /* Card swipe animation */
+    .flip-card.slide-left{animation:slideLeft 0.3s ease forwards}
+    .flip-card.slide-right{animation:slideRight 0.3s ease forwards}
+    @keyframes slideLeft{
+      0%{transform:translateX(0);opacity:1}
+      40%{transform:translateX(-60px);opacity:0}
+      41%{transform:translateX(80px);opacity:0}
+      100%{transform:translateX(0);opacity:1}
+    }
+    @keyframes slideRight{
+      0%{transform:translateX(0);opacity:1}
+      40%{transform:translateX(60px);opacity:0}
+      41%{transform:translateX(-80px);opacity:0}
+      100%{transform:translateX(0);opacity:1}
+    }
+
+    /* WORD LIST (panel from card header) */
+    .list-panel{
+      position:fixed;inset:0;z-index:200;
+      display:flex;flex-direction:column;
+      background:var(--bg);
+      transform:translateX(100%);
+      transition:transform 0.3s cubic-bezier(0.4,0.2,0.2,1);
+    }
+    .list-panel.open{transform:translateX(0)}
+    .panel-header{
+      display:flex;align-items:center;gap:10px;padding:16px 18px;
+      border-bottom:1px solid var(--border);
+      background:linear-gradient(160deg,#2e2319,#1c1714);
+      flex-shrink:0;
+    }
+    .panel-title{flex:1;font-size:1rem;font-weight:700}
+    .panel-body{flex:1;overflow-y:auto;padding:14px}
+    .word-row{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:14px;padding:14px 16px;
+      display:flex;align-items:center;gap:10px;
+      margin-bottom:8px;cursor:pointer;transition:border-color 0.15s;
+    }
+    .word-row:active{border-color:var(--accent)}
+    .word-row.is-unknown{border-color:rgba(192,84,74,0.35)}
+    .word-row-num{font-size:0.65rem;color:var(--sub);min-width:20px}
+    .word-row-en{font-size:0.95rem;font-weight:700;flex:1}
+    .word-row-tr{font-size:0.85rem;color:var(--green);flex:1;display:none}
+    .word-row.flipped .word-row-en{display:none}
+    .word-row.flipped .word-row-tr{display:block}
+    .word-row-actions{display:flex;gap:6px;flex-shrink:0}
+    .row-action-btn{
+      border-radius:8px;padding:6px 9px;font-size:0.7rem;cursor:pointer;font-weight:700;
+      border:1px solid;display:flex;align-items:center;
+    }
+    .row-del-btn{
+      background:rgba(192,84,74,0.1);border-color:rgba(192,84,74,0.3);color:var(--danger);
+    }
+    .row-unk-btn{
+      background:rgba(192,84,74,0.1);border-color:rgba(192,84,74,0.3);color:var(--danger);
+    }
+    .row-knw-btn{
+      background:rgba(122,184,122,0.1);border-color:rgba(122,184,122,0.3);color:var(--green);
+    }
+
+    /* ADD FORM */
+    .add-form-panel{
+      position:fixed;bottom:0;left:0;right:0;z-index:210;
+      background:var(--bg2);
+      border-top:1px solid var(--border);
+      border-radius:24px 24px 0 0;
+      padding:20px 18px 32px;
+      transform:translateY(100%);
+      transition:transform 0.3s cubic-bezier(0.4,0.2,0.2,1);
+      box-shadow:0 -8px 40px rgba(0,0,0,0.5);
+    }
+    .add-form-panel.open{transform:translateY(0)}
+    .add-form-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 18px}
+    .add-form-title{font-size:0.75rem;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-weight:700}
+    .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}
+    .fg label{font-size:0.72rem;color:var(--sub);font-weight:600}
+    .fg input{
+      background:#140f0c;border:1.5px solid var(--border);
+      color:var(--text);border-radius:12px;padding:12px 14px;
+      font-size:0.95rem;outline:none;width:100%;
+      transition:border-color 0.2s;
+    }
+    .fg input:focus{border-color:var(--accent)}
+    .save-btn{
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      color:#1c1714;border:none;border-radius:12px;
+      padding:14px;font-size:0.9rem;font-weight:800;
+      cursor:pointer;width:100%;margin-top:4px;
+      box-shadow:0 4px 18px rgba(212,135,74,0.35);
+    }
+
+    /* SETTINGS */
+    .settings-body{padding:18px;flex:1;overflow-y:auto}
+    .settings-section{margin-bottom:24px}
+    .settings-section-title{font-size:0.68rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px}
+    .group-row{
+      background:var(--card);border:1px solid var(--border);
+      border-radius:14px;padding:12px 14px;
+      display:flex;align-items:center;gap:8px;margin-bottom:8px;
+    }
+    .group-row input{
+      background:#140f0c;border:1.5px solid var(--border);
+      color:var(--text);border-radius:10px;padding:8px 10px;
+      font-size:0.85rem;outline:none;flex:1;
+      transition:border-color 0.2s;
+    }
+    .group-row input:focus{border-color:var(--accent)}
+    .save-mini-btn{
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      color:#1c1714;border:none;border-radius:9px;
+      padding:8px 11px;font-size:0.75rem;font-weight:800;cursor:pointer;
+    }
+    .del-btn{
+      background:rgba(192,84,74,0.12);border:1px solid rgba(192,84,74,0.3);
+      color:var(--danger);border-radius:9px;padding:8px 10px;cursor:pointer;font-size:0.85rem;
+    }
+    .add-group-row{display:flex;gap:8px}
+    .add-group-inp{
+      background:#140f0c;border:1.5px solid var(--border);
+      color:var(--text);border-radius:12px;padding:11px 13px;
+      font-size:0.9rem;outline:none;flex:1;
+      transition:border-color 0.2s;
+    }
+    .add-group-inp:focus{border-color:var(--accent)}
+    .add-group-btn{
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      color:#1c1714;border:none;border-radius:12px;
+      padding:11px 16px;font-size:0.85rem;font-weight:800;cursor:pointer;
+    }
+
+    /* EMPTY */
+    .empty-state{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      flex:1;padding:40px 20px;text-align:center;gap:12px;
+    }
+    .empty-icon-big{font-size:3.5rem;opacity:0.4}
+    .empty-text{color:var(--sub);font-size:0.9rem}
+    .empty-cta{
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      color:#1c1714;border:none;border-radius:12px;
+      padding:12px 22px;font-size:0.85rem;font-weight:800;cursor:pointer;margin-top:6px;
+    }
+
+    /* TOAST */
+    .toast{
+      position:fixed;bottom:30px;left:50%;
+      transform:translateX(-50%) translateY(90px);
+      background:var(--card2);color:var(--text);
+      border:1px solid var(--border);
+      padding:11px 20px;border-radius:30px;
+      font-weight:700;font-size:0.82rem;
+      transition:transform 0.3s cubic-bezier(0.4,0.2,0.2,1);
+      z-index:999;white-space:nowrap;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    }
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .toast.accent{border-color:rgba(212,135,74,0.5)}
+    .toast.green{border-color:rgba(122,184,122,0.5)}
+    .toast.red{border-color:rgba(192,84,74,0.5)}
+
+    /* OVERLAY */
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:195;
+      opacity:0;pointer-events:none;transition:opacity 0.3s;
+    }
+    .overlay.show{opacity:1;pointer-events:all}
+
+    /* END SCREEN */
+    .end-screen{
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      flex:1;padding:30px 20px;text-align:center;gap:14px;
+    }
+    .end-icon{font-size:4rem}
+    .end-title{font-size:1.3rem;font-weight:800;color:var(--text)}
+    .end-sub{font-size:0.85rem;color:var(--sub)}
+    .end-btn{
+      background:linear-gradient(135deg,var(--accent),var(--yellow));
+      color:#1c1714;border:none;border-radius:14px;
+      padding:14px 28px;font-size:0.95rem;font-weight:800;cursor:pointer;
+      box-shadow:0 4px 18px rgba(212,135,74,0.35);
+    }
+    .end-btn2{
+      background:transparent;color:var(--sub);border:1px solid var(--border);
+      border-radius:14px;padding:12px 24px;font-size:0.85rem;font-weight:700;cursor:pointer;
+    }
+
+    /* Group color palette */
+    .gc0{background:#d4874a}
+    .gc1{background:#7ab87a}
+    .gc2{background:#6a9fd4}
+    .gc3{background:#d4a84b}
+    .gc4{background:#b47ab8}
+    .gc5{background:#c0544a}
+    .gc6{background:#4ab8b8}
+    .gc7{background:#d47ab0}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="main-header">
+  <div class="header-left">
+    <div class="header-logo">&#x1F4D6;</div>
+    <div>
+      <div class="header-title">Kelime Kartlari</div>
+      <div class="header-sub" id="h-sub">Grubunu sec</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" onclick="showPage('settings')" title="Ayarlar">&#9881;</button>
+  </div>
+</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="scroll-area">
+    <div class="home-greeting">
+      <div class="home-greeting-icon">&#x2615;</div>
+      <div class="home-greeting-text">
+        <h2>Gunun Kelimeleri</h2>
+        <p>Bir grup sec ve ogrenmege basla</p>
+      </div>
+    </div>
+    <div class="section-label">Gruplar</div>
+    <div class="group-grid" id="group-grid"></div>
+    <div id="unknown-btn-container"></div>
+  </div>
+</div>
+
+<!-- CARD PAGE -->
+<div class="page" id="page-card">
+  <div class="card-header">
+    <button class="back-btn" onclick="showPage('home')">&#8592;</button>
+    <div class="card-header-title" id="card-group-title"></div>
+    <div class="card-header-actions">
+      <button class="icon-btn" onclick="openListPanel()" title="Kelimeler">&#9776;</button>
+      <button class="icon-btn" onclick="openAddForm()" title="Kelime Ekle">&#43;</button>
+    </div>
+  </div>
+  <div class="card-mode-body" id="card-mode-body">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<!-- SETTINGS PAGE -->
+<div class="page" id="page-settings">
+  <div class="card-header">
+    <button class="back-btn" onclick="showPage('home')">&#8592;</button>
+    <div class="card-header-title">Ayarlar</div>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section">
+      <div class="settings-section-title">Grup Yonetimi</div>
+      <div id="group-manage-list"></div>
+      <div class="add-group-row">
+        <input class="add-group-inp" type="text" id="new-group-inp" placeholder="Yeni grup adi...">
+        <button class="add-group-btn" onclick="addGroup()">Ekle</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WORD LIST PANEL -->
+<div class="overlay" id="overlay" onclick="closeListPanel()"></div>
+<div class="list-panel" id="list-panel">
+  <div class="panel-header">
+    <button class="back-btn" onclick="closeListPanel()">&#8592;</button>
+    <div class="panel-title" id="panel-title"></div>
+    <div class="list-stats" id="panel-stats" style="font-size:0.75rem;color:var(--sub)"></div>
+  </div>
+  <div class="panel-body" id="panel-body"></div>
+</div>
+
+<!-- ADD FORM PANEL -->
+<div class="add-form-panel" id="add-form-panel">
+  <div class="add-form-handle"></div>
+  <div class="add-form-title">Yeni Kelime Ekle</div>
+  <div class="fg"><label>Ingilizce</label><input type="text" id="inp-en" placeholder="apple" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
+  <div class="fg"><label>Turkce</label><input type="text" id="inp-tr" placeholder="elma" autocomplete="off" autocorrect="off" spellcheck="false"></div>
+  <button class="save-btn" onclick="saveWord()">Kaydet</button>
+</div>
+<div class="overlay" id="form-overlay" onclick="closeAddForm()"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var GROUP_COLORS = ['gc0','gc1','gc2','gc3','gc4','gc5','gc6','gc7'];
+
+function loadData(){
+  var d = localStorage.getItem('kelime-v2');
+  if(d) return JSON.parse(d);
+  return {
+    groups:[
+      {id:'g1',name:'Grup 1',ci:0},{id:'g2',name:'Grup 2',ci:1},
+      {id:'g3',name:'Grup 3',ci:2},{id:'g4',name:'Grup 4',ci:3},
+      {id:'g5',name:'Grup 5',ci:4}
+    ],
+    words:[], unknowns:[]
+  };
+}
+function saveData(){ localStorage.setItem('kelime-v2', JSON.stringify(data)); }
+
+var data = loadData();
+var currentGroup = null;
+var currentWords = [];
+var currentIndex = 0;
+
+/* ---- HOME ---- */
+function renderHome(){
+  var grid = document.getElementById('group-grid');
+  grid.innerHTML = '';
+  data.groups.forEach(function(g, idx){
+    var words = data.words.filter(function(w){ return w.gid===g.id; });
+    var unknownCount = words.filter(function(w){ return data.unknowns.indexOf(w.id)!==-1; }).length;
+    var knownCount = words.length - unknownCount;
+    var pct = words.length > 0 ? Math.round((knownCount/words.length)*100) : 0;
+    var ci = (g.ci !== undefined) ? g.ci : (idx % GROUP_COLORS.length);
+    var div = document.createElement('div');
+    div.className = 'group-btn';
+    div.innerHTML =
+      '<div class="group-color-dot '+GROUP_COLORS[ci]+'"></div>'+
+      '<div class="group-name">'+escHtml(g.name)+'</div>'+
+      '<div class="group-count">'+words.length+' kelime &nbsp;·&nbsp; %'+pct+' biliniyor</div>'+
+      '<div class="group-progress-bar"><div class="group-progress-fill" style="width:'+pct+'%"></div></div>'+
+      (unknownCount>0?'<span class="group-badge">'+unknownCount+'</span>':'');
+    div.onclick = (function(id){ return function(){ openGroup(id); }; })(g.id);
+    grid.appendChild(div);
+  });
+
+  var uc = data.unknowns.length;
+  var cont = document.getElementById('unknown-btn-container');
+  cont.innerHTML = '';
+  var udiv = document.createElement('div');
+  udiv.className = 'group-btn unknown-btn';
+  udiv.innerHTML =
+    '<div class="group-color-dot" style="background:var(--danger);flex-shrink:0"></div>'+
+    '<div class="group-name">Bilinmeyenler</div>'+
+    '<div class="group-count">'+uc+' kelime</div>'+
+    (uc>0?'<span class="group-badge">'+uc+'</span>':'');
+  udiv.onclick = function(){ openUnknowns(); };
+  cont.appendChild(udiv);
+}
+
+/* ---- GROUP OPEN ---- */
+function openGroup(gid){
+  currentGroup = gid;
+  var g = data.groups.find(function(x){ return x.id===gid; });
+  document.getElementById('card-group-title').textContent = g.name;
+  document.getElementById('h-sub').textContent = g.name;
+  loadCardMode();
+  showPage('card');
+}
+function openUnknowns(){
+  currentGroup = 'unknowns';
+  document.getElementById('card-group-title').textContent = 'Bilinmeyenler';
+  document.getElementById('h-sub').textContent = 'Bilinmeyenler';
+  loadCardMode();
+  showPage('card');
+}
+
+function getGroupWords(){
+  if(currentGroup==='unknowns') return data.words.filter(function(w){ return data.unknowns.indexOf(w.id)!==-1; });
+  return data.words.filter(function(w){ return w.gid===currentGroup; });
+}
+function isUnknown(wid){ return data.unknowns.indexOf(wid)!==-1; }
+
+/* ---- CARD MODE ---- */
+function loadCardMode(){
+  currentWords = getGroupWords();
+  currentIndex = 0;
+  renderCardMode();
+}
+
+function renderCardMode(){
+  var body = document.getElementById('card-mode-body');
+  if(currentWords.length===0){
+    body.innerHTML =
+      '<div class="empty-state">'+
+        '<div class="empty-icon-big">&#128218;</div>'+
+        '<div class="empty-text">Bu grupta henuz kelime yok.</div>'+
+        '<button class="empty-cta" onclick="openAddForm()">+ Kelime Ekle</button>'+
+      '</div>';
+    return;
+  }
+  var w = currentWords[currentIndex];
+  var pct = Math.round(((currentIndex+1)/currentWords.length)*100);
+  var unk = isUnknown(w.id);
+
+  body.innerHTML =
+    '<div class="card-progress">'+
+      '<span class="progress-text">'+(currentIndex+1)+' / '+currentWords.length+'</span>'+
+      '<div class="progress-bar-outer"><div class="progress-bar-inner" style="width:'+pct+'%"></div></div>'+
+    '</div>'+
+    '<div class="flip-card" id="flip-card" onclick="flipCard()">'+
+      '<div class="flip-card-inner" id="flip-inner">'+
+        '<div class="flip-card-face flip-card-front">'+
+          '<div class="card-lang-tag">EN</div>'+
+          '<div class="card-word" id="cv-en">'+escHtml(w.en)+'</div>'+
+          '<div class="card-hint"><div class="hint-icon">&#x1F504;</div>Dokunun &mdash; Turkceye cevir</div>'+
+        '</div>'+
+        '<div class="flip-card-face flip-card-back">'+
+          '<div class="card-lang-tag">TR</div>'+
+          '<div class="card-word-tr" id="cv-tr">'+escHtml(w.tr)+'</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="swipe-guide">'+
+      '<span>&#10094; onceki</span>'+
+      '<span style="opacity:0.4;font-size:0.65rem">kaydirin</span>'+
+      '<span>sonraki &#10095;</span>'+
+    '</div>'+
+    '<div class="card-action-btns">'+
+      (unk
+        ? '<button class="action-btn btn-known-card" onclick="markKnown()">&#10003;&nbsp; Bildim</button>'
+        : '<button class="action-btn btn-unknown-card" onclick="markUnknown()">&#10060;&nbsp; Bilemedim</button>')+
+    '</div>';
+
+  setupCardSwipe();
+}
+
+function flipCard(){
+  var fc = document.getElementById('flip-card');
+  if(fc) fc.classList.toggle('flipped');
+}
+
+function nextCard(){
+  if(currentIndex < currentWords.length-1){
+    var fc = document.getElementById('flip-card');
+    if(fc){ fc.classList.remove('flipped','slide-right'); fc.classList.add('slide-left'); }
+    currentIndex++;
+    setTimeout(renderCardMode, 300);
+  } else {
+    showEndScreen();
+  }
+}
+function prevCard(){
+  if(currentIndex > 0){
+    var fc = document.getElementById('flip-card');
+    if(fc){ fc.classList.remove('flipped','slide-left'); fc.classList.add('slide-right'); }
+    currentIndex--;
+    setTimeout(renderCardMode, 300);
+  } else {
+    showToast('Ilk kart!');
+  }
+}
+
+function showEndScreen(){
+  var body = document.getElementById('card-mode-body');
+  var total = currentWords.length;
+  var known = currentWords.filter(function(w){ return !isUnknown(w.id); }).length;
+  body.innerHTML =
+    '<div class="end-screen">'+
+      '<div class="end-icon">&#127881;</div>'+
+      '<div class="end-title">Tamamlandi!</div>'+
+      '<div class="end-sub">'+known+' / '+total+' kelimeyi biliyorsun</div>'+
+      '<button class="end-btn" onclick="restartCards()">&#128260;&nbsp; Tekrar Bastan</button>'+
+      '<button class="end-btn2" onclick="showPage(\'home\')">&#8592;&nbsp; Gruplara Don</button>'+
+    '</div>';
+}
+function restartCards(){
+  currentWords = getGroupWords();
+  currentIndex = 0;
+  renderCardMode();
+}
+
+function markUnknown(){
+  var w = currentWords[currentIndex];
+  if(!isUnknown(w.id)) data.unknowns.push(w.id);
+  saveData(); renderHome();
+  showToast('Bilinmeyenlere eklendi', 'red');
+  setTimeout(nextCard, 400);
+}
+function markKnown(){
+  var w = currentWords[currentIndex];
+  data.unknowns = data.unknowns.filter(function(id){ return id!==w.id; });
+  saveData(); renderHome();
+  showToast('Harika! Bildim', 'green');
+  setTimeout(nextCard, 400);
+}
+
+/* ---- SWIPE ---- */
+function setupCardSwipe(){
+  var el = document.getElementById('flip-card');
+  if(!el) return;
+  var txStart=0, tyStart=0, moved=false;
+  el.addEventListener('touchstart',function(e){
+    txStart=e.touches[0].clientX;
+    tyStart=e.touches[0].clientY;
+    moved=false;
+  },{passive:true});
+  el.addEventListener('touchmove',function(e){
+    var dx=Math.abs(e.touches[0].clientX-txStart);
+    var dy=Math.abs(e.touches[0].clientY-tyStart);
+    if(dx>dy && dx>8) moved=true;
+  },{passive:true});
+  el.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-txStart;
+    var dy=Math.abs(e.changedTouches[0].clientY-tyStart);
+    if(Math.abs(dx)>50 && Math.abs(dx)>dy){
+      e.preventDefault();
+      if(dx<0) nextCard(); else prevCard();
+    }
+  });
+}
+
+/* ---- LIST PANEL ---- */
+function openListPanel(){
+  var words = getGroupWords();
+  var title = currentGroup==='unknowns' ? 'Bilinmeyenler' :
+    data.groups.find(function(x){ return x.id===currentGroup; }).name;
+  document.getElementById('panel-title').textContent = title;
+  document.getElementById('panel-stats').textContent = words.length+' kelime';
+  renderPanelList();
+  document.getElementById('list-panel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+}
+function closeListPanel(){
+  document.getElementById('list-panel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function renderPanelList(){
+  var words = getGroupWords();
+  var body = document.getElementById('panel-body');
+  if(words.length===0){
+    body.innerHTML = '<div class="empty-state"><div class="empty-icon-big">&#128195;</div><div class="empty-text">Kelime bulunamadi.</div></div>';
+    return;
+  }
+  body.innerHTML = '';
+  words.forEach(function(w,i){
+    var div = document.createElement('div');
+    div.className = 'word-row'+(isUnknown(w.id)?' is-unknown':'');
+    div.id = 'wr-'+w.id;
+    div.innerHTML =
+      '<div class="word-row-num">'+(i+1)+'</div>'+
+      '<div class="word-row-en">'+escHtml(w.en)+'</div>'+
+      '<div class="word-row-tr">'+escHtml(w.tr)+'</div>'+
+      '<div class="word-row-actions">'+
+        (isUnknown(w.id)
+          ? '<button class="row-action-btn row-knw-btn" onclick="panelKnown(\''+w.id+'\',event)">&#10003;</button>'
+          : '<button class="row-action-btn row-unk-btn" onclick="panelUnkn(\''+w.id+'\',event)">&#10060;</button>')+
+        '<button class="row-action-btn row-del-btn" onclick="deleteWord(\''+w.id+'\',event)">&#128465;</button>'+
+      '</div>';
+    div.onclick = function(e){ if(e.target.tagName==='BUTTON') return; div.classList.toggle('flipped'); };
+    body.appendChild(div);
+  });
+}
+function panelUnkn(wid,e){
+  e.stopPropagation();
+  if(!isUnknown(wid)) data.unknowns.push(wid);
+  saveData(); renderPanelList(); renderHome();
+  showToast('Bilinmeyenlere eklendi','red');
+}
+function panelKnown(wid,e){
+  e.stopPropagation();
+  data.unknowns = data.unknowns.filter(function(id){ return id!==wid; });
+  saveData(); renderPanelList(); renderHome();
+  showToast('Bildim!','green');
+}
+function deleteWord(wid,e){
+  e.stopPropagation();
+  if(!confirm('Bu kelimeyi sil?')) return;
+  data.words = data.words.filter(function(w){ return w.id!==wid; });
+  data.unknowns = data.unknowns.filter(function(id){ return id!==wid; });
+  saveData();
+  currentWords = getGroupWords();
+  if(currentIndex >= currentWords.length && currentIndex > 0) currentIndex = currentWords.length-1;
+  renderPanelList();
+  renderCardMode();
+  renderHome();
+  showToast('Kelime silindi');
+}
+
+/* ---- ADD FORM ---- */
+function openAddForm(){
+  document.getElementById('add-form-panel').classList.add('open');
+  document.getElementById('form-overlay').classList.add('show');
+  document.getElementById('form-overlay').style.zIndex = '205';
+  setTimeout(function(){ document.getElementById('inp-en').focus(); }, 300);
+}
+function closeAddForm(){
+  document.getElementById('add-form-panel').classList.remove('open');
+  document.getElementById('form-overlay').classList.remove('show');
+}
+function saveWord(){
+  var en = document.getElementById('inp-en').value.trim();
+  var tr = document.getElementById('inp-tr').value.trim();
+  if(!en||!tr){ showToast('Ingilizce ve Turkce yazin!'); return; }
+  var gid = (currentGroup==='unknowns') ? data.groups[0].id : currentGroup;
+  data.words.push({id:'w'+Date.now(), gid:gid, en:en, tr:tr});
+  saveData();
+  document.getElementById('inp-en').value='';
+  document.getElementById('inp-tr').value='';
+  document.getElementById('inp-en').focus();
+  currentWords = getGroupWords();
+  renderCardMode();
+  renderHome();
+  showToast('Kelime eklendi!','accent');
+}
+document.getElementById('inp-tr').addEventListener('keydown',function(e){ if(e.key==='Enter') saveWord(); });
+document.getElementById('inp-en').addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('inp-tr').focus(); });
+
+/* ---- SETTINGS ---- */
+function renderSettings(){
+  var list = document.getElementById('group-manage-list');
+  list.innerHTML = '';
+  data.groups.forEach(function(g,idx){
+    var ci = (g.ci !== undefined) ? g.ci : (idx % GROUP_COLORS.length);
+    var div = document.createElement('div');
+    div.className = 'group-row';
+    div.innerHTML =
+      '<div class="group-color-dot '+GROUP_COLORS[ci]+'" style="flex-shrink:0"></div>'+
+      '<input type="text" value="'+escAttr(g.name)+'" id="gi-'+g.id+'">'+
+      '<button class="save-mini-btn" onclick="renameGroup(\''+g.id+'\')">Kaydet</button>'+
+      '<button class="del-btn" onclick="deleteGroup(\''+g.id+'\')">&#128465;</button>';
+    list.appendChild(div);
+  });
+}
+function renameGroup(gid){
+  var g=data.groups.find(function(x){ return x.id===gid; });
+  var v=document.getElementById('gi-'+gid).value.trim();
+  if(!v) return;
+  g.name=v; saveData(); renderHome(); showToast('Guncellendi!');
+}
+function deleteGroup(gid){
+  if(!confirm('Bu grubu ve butun kelimelerini sil?')) return;
+  data.groups=data.groups.filter(function(g){ return g.id!==gid; });
+  data.words=data.words.filter(function(w){ return w.gid!==gid; });
+  saveData(); renderSettings(); renderHome(); showToast('Grup silindi!');
+}
+function addGroup(){
+  var v=document.getElementById('new-group-inp').value.trim();
+  if(!v) return;
+  var ci = data.groups.length % GROUP_COLORS.length;
+  data.groups.push({id:'g'+Date.now(), name:v, ci:ci});
+  saveData();
+  document.getElementById('new-group-inp').value='';
+  renderSettings(); renderHome(); showToast('Grup eklendi!','accent');
+}
+
+/* ---- PAGE ---- */
+function showPage(name){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('page-'+name).classList.add('active');
+  if(name==='home'){ renderHome(); document.getElementById('h-sub').textContent='Grubunu sec'; }
+  if(name==='settings') renderSettings();
+}
+
+/* ---- TOAST ---- */
+var toastTimer = null;
+function showToast(msg, type){
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show'+(type?' '+type:'');
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+}
+
+/* ---- UTILS ---- */
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
+
+/* ---- INIT ---- */
+renderHome();
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(){});
+</script>
+</body>
+</html>
