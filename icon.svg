@@ -1,64 +1,101 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#3a1fa8"/>
-      <stop offset="100%" style="stop-color:#7c5af7"/>
+      <stop offset="0%" style="stop-color:#2a2520"/>
+      <stop offset="50%" style="stop-color:#3a3028"/>
+      <stop offset="100%" style="stop-color:#1e1a16"/>
     </linearGradient>
     <linearGradient id="card1g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.22"/>
-      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.06"/>
+      <stop offset="0%" style="stop-color:#7a4820"/>
+      <stop offset="100%" style="stop-color:#4a2810"/>
     </linearGradient>
     <linearGradient id="card2g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.35"/>
-      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.12"/>
+      <stop offset="0%" style="stop-color:#e8943a"/>
+      <stop offset="100%" style="stop-color:#a05a20"/>
     </linearGradient>
-    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.35"/>
+    <linearGradient id="shimmer" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.2"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="cardshadow">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.6"/>
     </filter>
-    <filter id="emboss">
-      <feDropShadow dx="-2" dy="-2" stdDeviation="3" flood-color="#ffffff" flood-opacity="0.3"/>
-      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    <filter id="frontshadow">
+      <feDropShadow dx="-3" dy="-3" stdDeviation="5" flood-color="#e8943a" flood-opacity="0.3"/>
+      <feDropShadow dx="4" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <filter id="steamblur">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+    <filter id="textglow">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#e8943a" flood-opacity="0.8"/>
     </filter>
   </defs>
 
   <!-- Background -->
-  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#shimmer)"/>
+  <ellipse cx="256" cy="260" rx="210" ry="170" fill="#c8813a" opacity="0.06"/>
 
-  <!-- Shine overlay top -->
-  <ellipse cx="200" cy="80" rx="220" ry="100" fill="white" opacity="0.07"/>
+  <!-- === COFFEE CUP (right side) === -->
+  <ellipse cx="368" cy="328" rx="50" ry="9" fill="#2a1408" opacity="0.95"/>
+  <path d="M328 270 Q326 326 332 334 Q346 342 368 342 Q390 342 402 334 Q408 326 406 270 Z"
+    fill="#4a2810" stroke="#7a4820" stroke-width="2.5"/>
+  <ellipse cx="368" cy="272" rx="36" ry="8" fill="#1e0e04"/>
+  <ellipse cx="368" cy="272" rx="32" ry="6.5" fill="#2e1206" opacity="0.95"/>
+  <ellipse cx="365" cy="271" rx="17" ry="4.5" fill="#c8813a" opacity="0.3" transform="rotate(-12 365 271)"/>
+  <path d="M404 283 Q432 283 432 300 Q432 318 404 318" fill="none" stroke="#4a2810" stroke-width="11" stroke-linecap="round"/>
+  <path d="M404 283 Q426 283 426 300 Q426 318 404 318" fill="none" stroke="#6b3a1a" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Steam -->
+  <path d="M348 258 Q343 242 348 226 Q353 210 348 194" fill="none" stroke="#d4874a" stroke-width="3.5" stroke-linecap="round" opacity="0.45" filter="url(#steamblur)"/>
+  <path d="M368 254 Q363 238 368 222 Q373 206 368 190" fill="none" stroke="#d4874a" stroke-width="3.5" stroke-linecap="round" opacity="0.38" filter="url(#steamblur)"/>
+  <path d="M388 258 Q383 242 388 226 Q393 210 388 194" fill="none" stroke="#d4874a" stroke-width="3.5" stroke-linecap="round" opacity="0.3" filter="url(#steamblur)"/>
 
-  <!-- Back card (shadow card) -->
-  <rect x="155" y="140" width="230" height="165" rx="22"
-    fill="url(#card1g)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"
-    filter="url(#shadow)" transform="rotate(-8 270 222)"/>
+  <!-- === BACK CARD === -->
+  <rect x="70" y="145" width="235" height="168" rx="22"
+    fill="url(#card1g)"
+    stroke="rgba(200,129,58,0.4)" stroke-width="2"
+    filter="url(#cardshadow)"
+    transform="rotate(-10 187 229)"/>
 
-  <!-- Front card -->
-  <rect x="130" y="165" width="240" height="168" rx="22"
-    fill="url(#card2g)" stroke="rgba(255,255,255,0.3)" stroke-width="2"
-    filter="url(#emboss)"/>
+  <!-- === FRONT CARD === -->
+  <rect x="52" y="172" width="242" height="170" rx="22"
+    fill="url(#card2g)"
+    stroke="rgba(255,210,140,0.55)" stroke-width="2.5"
+    filter="url(#frontshadow)"/>
 
-  <!-- Card lines (text placeholder) -->
-  <rect x="158" y="208" width="130" height="10" rx="5" fill="white" opacity="0.7"/>
-  <rect x="158" y="228" width="90" height="8" rx="4" fill="white" opacity="0.4"/>
-  <rect x="158" y="246" width="110" height="8" rx="4" fill="white" opacity="0.3"/>
+  <!-- Card shine -->
+  <rect x="52" y="172" width="242" height="55" rx="22" fill="white" opacity="0.08"/>
 
-  <!-- Small dot accent -->
-  <circle cx="310" cy="228" r="18" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-  <text x="310" y="234" text-anchor="middle" font-family="Georgia,serif" font-size="18" fill="white" opacity="0.9">EN</text>
-
-  <!-- Bottom line divider -->
-  <line x1="130" y1="358" x2="382" y2="358" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
-
-  <!-- V.U bottom right -->
-  <text x="368" y="430"
-    text-anchor="end"
-    font-family="'Segoe UI',Arial,sans-serif"
-    font-size="52"
-    font-weight="800"
+  <!-- Kelime Kartları text on card -->
+  <text x="173" y="245"
+    text-anchor="middle"
+    font-family="'Joehand','Segoe Script','Comic Sans MS',cursive"
+    font-size="26"
+    font-weight="bold"
     fill="white"
-    opacity="0.92"
-    letter-spacing="2">V.U</text>
+    opacity="0.95"
+    filter="url(#textglow)">Kelime</text>
+  <text x="173" y="278"
+    text-anchor="middle"
+    font-family="'Joehand','Segoe Script','Comic Sans MS',cursive"
+    font-size="26"
+    font-weight="bold"
+    fill="white"
+    opacity="0.95"
+    filter="url(#textglow)">Kartlari</text>
 
-  <!-- Bottom right glow -->
-  <ellipse cx="400" cy="440" rx="90" ry="60" fill="rgba(255,255,255,0.05)"/>
+  <!-- Card bottom line accent -->
+  <line x1="90" y1="308" x2="256" y2="308" stroke="rgba(255,210,140,0.3)" stroke-width="1.5"/>
+
+  <!-- V.U small corner - bottom right -->
+  <text x="466" y="482"
+    text-anchor="end"
+    font-family="'Joehand','Segoe Script','Comic Sans MS',cursive"
+    font-size="30"
+    font-weight="bold"
+    font-style="italic"
+    fill="#ffd166"
+    opacity="0.95">V.U</text>
+
 </svg>
