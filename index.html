@@ -584,7 +584,7 @@ function defaultData(){
       {id:'g3',name:'Grup 3',ci:2},{id:'g4',name:'Grup 4',ci:3},
       {id:'g5',name:'Grup 5',ci:4}
     ],
-    words:[], unknowns:[]
+    words:[], unknowns:[], categories:[]
   };
 }
 
@@ -668,6 +668,13 @@ function loadYDSData(){
     if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}
   });
   saveData();
+  /* Kategori oluştur */
+  if(!data.categories) data.categories = [];
+  var existingCat = data.categories.find(function(c){return c.id==='cat-yds-fiiller';});
+  if(!existingCat){
+    data.categories.push({id:'cat-yds-fiiller', name:'YDS - Bilinmesi Yarar Olan Fiiller', groupIds:['gyds1','gyds2','gyds3','gyds4','gyds5','gyds6','gyds7','gyds8','gyds9'], _open:false});
+  }
+  saveData();
   renderHome();
   showToast(addedGroups+' grup ve '+addedWords+' kelime eklendi!','green');
 }
@@ -719,28 +726,85 @@ openDB(function(){
 
 /* ---- HOME ---- */
 function renderHome(){
+  if(!data.categories) data.categories = [];
   var grid = document.getElementById('group-grid');
   grid.innerHTML = '';
+
+  var categorizedGids = [];
+  data.categories.forEach(function(cat){categorizedGids = categorizedGids.concat(cat.groupIds||[]);});
+
+  /* Kategorisiz gruplar */
   data.groups.forEach(function(g, idx){
-    var words = data.words.filter(function(w){ return w.gid===g.id; });
-    var unknownCount = words.filter(function(w){ return data.unknowns.indexOf(w.id)!==-1; }).length;
-    var knownCount = words.length - unknownCount;
-    var pct = words.length > 0 ? Math.round((knownCount/words.length)*100) : 0;
-    var ci = (g.ci !== undefined) ? g.ci : (idx % GROUP_COLORS.length);
-    var div = document.createElement('div');
-    div.className = 'group-btn';
-    div.innerHTML =
-      '<div class="group-color-dot '+GROUP_COLORS[ci]+'"></div>'+
-      '<div class="group-name">'+escHtml(g.name)+'</div>'+
-      '<div class="group-count">'+words.length+' kelime &nbsp;·&nbsp; %'+pct+' biliniyor</div>'+
-      '<div class="group-progress-bar"><div class="group-progress-fill" style="width:'+pct+'%"></div></div>'+
-      (unknownCount>0?'<span class="group-badge">'+unknownCount+'</span>':'');
-    div.onclick = (function(id){ return function(){ openGroup(id); }; })(g.id);
-    grid.appendChild(div);
+    if(categorizedGids.indexOf(g.id)!==-1) return;
+    grid.appendChild(makeGroupBtn(g, idx));
   });
+
+  /* Kategoriler (klasör butonu) */
+  data.categories.forEach(function(cat){
+    var catGroups = (cat.groupIds||[]).map(function(gid){return data.groups.find(function(g){return g.id===gid;});}).filter(Boolean);
+    var totalWords = 0, totalKnown = 0;
+    catGroups.forEach(function(g){
+      var words = data.words.filter(function(w){return w.gid===g.id;});
+      totalWords += words.length;
+      totalKnown += words.filter(function(w){return data.unknowns.indexOf(w.id)===-1;}).length;
+    });
+    var pct = totalWords>0 ? Math.round((totalKnown/totalWords)*100) : 0;
+    var isOpen = cat._open || false;
+
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'margin-bottom:8px';
+
+    var catBtn = document.createElement('div');
+    catBtn.style.cssText = 'background:linear-gradient(135deg,var(--card),var(--card2));border:1.5px solid var(--accent);border-radius:14px;padding:14px 16px;cursor:pointer;position:relative;margin-bottom:'+(isOpen?'6px':'0');
+    catBtn.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px">'+
+      '<span style="font-size:1.3rem">📚</span>'+
+      '<div style="flex:1">'+
+      '<div style="font-size:0.95rem;font-weight:800;color:var(--accent)">'+escHtml(cat.name)+'</div>'+
+      '<div style="font-size:0.72rem;color:var(--sub);margin-top:2px">'+catGroups.length+' grup · '+totalWords+' kelime · %'+pct+' biliniyor</div>'+
+      '</div>'+
+      '<span style="font-size:1rem;color:var(--accent);transition:transform 0.2s;display:inline-block;transform:rotate('+(isOpen?'90':'0')+'deg)">▶</span>'+
+      '</div>'+
+      '<div style="margin-top:8px;height:4px;border-radius:2px;background:var(--card2);overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px"></div></div>';
+
+    var subWrap = document.createElement('div');
+    subWrap.style.cssText = 'display:'+(isOpen?'block':'none')+';padding-left:10px;border-left:2px solid var(--accent);margin-left:8px';
+
+    catGroups.forEach(function(g, idx){
+      subWrap.appendChild(makeGroupBtn(g, idx));
+    });
+
+    catBtn.onclick = function(){
+      cat._open = !cat._open;
+      renderHome();
+    };
+
+    wrap.appendChild(catBtn);
+    wrap.appendChild(subWrap);
+    grid.appendChild(wrap);
+  });
+
   var uc = data.unknowns.length;
   var lbl = document.getElementById('unknowns-count-label');
   if(lbl) lbl.textContent = uc+' kelime';
+}
+
+function makeGroupBtn(g, idx){
+  var words = data.words.filter(function(w){ return w.gid===g.id; });
+  var unknownCount = words.filter(function(w){ return data.unknowns.indexOf(w.id)!==-1; }).length;
+  var knownCount = words.length - unknownCount;
+  var pct = words.length > 0 ? Math.round((knownCount/words.length)*100) : 0;
+  var ci = (g.ci !== undefined) ? g.ci : (idx % GROUP_COLORS.length);
+  var div = document.createElement('div');
+  div.className = 'group-btn';
+  div.innerHTML =
+    '<div class="group-color-dot '+GROUP_COLORS[ci]+'"></div>'+
+    '<div class="group-name">'+escHtml(g.name)+'</div>'+
+    '<div class="group-count">'+words.length+' kelime &nbsp;·&nbsp; %'+pct+' biliniyor</div>'+
+    '<div class="group-progress-bar"><div class="group-progress-fill" style="width:'+pct+'%"></div></div>'+
+    (unknownCount>0?'<span class="group-badge">'+unknownCount+'</span>':'');
+  div.onclick = (function(id){ return function(){ openGroup(id); }; })(g.id);
+  return div;
 }
 
 /* ---- GROUP OPEN ---- */
