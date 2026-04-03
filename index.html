@@ -254,18 +254,18 @@
     }
 
     /* Card swipe animation */
-    .flip-card.slide-left{animation:slideLeft 0.3s ease forwards}
-    .flip-card.slide-right{animation:slideRight 0.3s ease forwards}
+    .flip-card.slide-left{animation:slideLeft 0.18s ease forwards}
+    .flip-card.slide-right{animation:slideRight 0.18s ease forwards}
     @keyframes slideLeft{
       0%{transform:translateX(0);opacity:1}
-      40%{transform:translateX(-60px);opacity:0}
-      41%{transform:translateX(80px);opacity:0}
+      45%{transform:translateX(-50px);opacity:0}
+      46%{transform:translateX(50px);opacity:0}
       100%{transform:translateX(0);opacity:1}
     }
     @keyframes slideRight{
       0%{transform:translateX(0);opacity:1}
-      40%{transform:translateX(60px);opacity:0}
-      41%{transform:translateX(-80px);opacity:0}
+      45%{transform:translateX(50px);opacity:0}
+      46%{transform:translateX(-50px);opacity:0}
       100%{transform:translateX(0);opacity:1}
     }
 
@@ -883,7 +883,7 @@ function nextCard(){
     var fc = document.getElementById('flip-card');
     if(fc){ fc.classList.remove('flipped','slide-right'); fc.classList.add('slide-left'); }
     currentIndex++;
-    setTimeout(renderCardMode, 300);
+    setTimeout(renderCardMode, 180);
   } else {
     showEndScreen();
   }
@@ -893,7 +893,7 @@ function prevCard(){
     var fc = document.getElementById('flip-card');
     if(fc){ fc.classList.remove('flipped','slide-left'); fc.classList.add('slide-right'); }
     currentIndex--;
-    setTimeout(renderCardMode, 300);
+    setTimeout(renderCardMode, 180);
   } else {
     showToast('Ilk kart!');
   }
