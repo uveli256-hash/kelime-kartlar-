@@ -881,7 +881,13 @@ function flipCard(){
 function nextCard(){
   if(currentIndex < currentWords.length-1){
     var fc = document.getElementById('flip-card');
-    if(fc){ fc.classList.remove('flipped','slide-right'); fc.classList.add('slide-left'); }
+    if(fc){
+      var inner = fc.querySelector('.flip-card-inner');
+      if(inner) inner.style.transition = 'none';
+      fc.classList.remove('flipped','slide-right');
+      void fc.offsetWidth;
+      fc.classList.add('slide-left');
+    }
     currentIndex++;
     setTimeout(renderCardMode, 180);
   } else {
@@ -891,7 +897,13 @@ function nextCard(){
 function prevCard(){
   if(currentIndex > 0){
     var fc = document.getElementById('flip-card');
-    if(fc){ fc.classList.remove('flipped','slide-left'); fc.classList.add('slide-right'); }
+    if(fc){
+      var inner = fc.querySelector('.flip-card-inner');
+      if(inner) inner.style.transition = 'none';
+      fc.classList.remove('flipped','slide-left');
+      void fc.offsetWidth;
+      fc.classList.add('slide-right');
+    }
     currentIndex--;
     setTimeout(renderCardMode, 180);
   } else {
