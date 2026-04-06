@@ -686,12 +686,13 @@ function loadKelimelerData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0, addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories) data.categories=[];
-  var existingCat=data.categories.find(function(c){return c.id==='cat-yds-kelimeler';});
-  if(!existingCat){data.categories.push({id:'cat-yds-kelimeler',name:'YDS - En Önemli Kelimeler',groupIds:['gkelg1','gkelg2','gkelg3','gkelg4','gkelg5','gkelg6','gkelg7','gkelg8','gkelg9','gkelg10','gkelg11','gkelg12','gkelg13','gkelg14','gkelg15'],_open:false});}
+  data.categories=data.categories.filter(function(c){return c.id!=='cat-yds-kelimeler';});
+  data.categories.push({id:'cat-yds-kelimeler',name:'YDS - En Önemli Kelimeler',groupIds:['gkelg1','gkelg2','gkelg3','gkelg4','gkelg5','gkelg6','gkelg7','gkelg8','gkelg9','gkelg10','gkelg11','gkelg12','gkelg13','gkelg14','gkelg15'],_open:false});
   saveData();
   renderHome();
   showToast(addedGroups+' grup ve '+addedWords+' kelime eklendi!','green');
@@ -707,8 +708,9 @@ function loadPhrasalVerbsData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0, addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories) data.categories=[];
   var existingCat=data.categories.find(function(c){return c.id==='cat-yds-phrasalverbs';});
@@ -730,8 +732,9 @@ function loadSifatlarData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0, addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories) data.categories=[];
   var existingCat=data.categories.find(function(c){return c.id==='cat-yds-sifatlar';});
@@ -750,8 +753,9 @@ function loadFullPhrasalVerbsData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0,addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories)data.categories=[];
   var existingCat=data.categories.find(function(c){return c.id==='cat-yds-fpv';});
@@ -769,8 +773,9 @@ function loadPrepPhrasesData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0,addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories)data.categories=[];
   var existingCat=data.categories.find(function(c){return c.id==='cat-yds-pp';});
@@ -788,8 +793,9 @@ function loadPrepositionKaliplariData(){
   var existingGids=data.groups.map(function(g){return g.id;});
   var addedGroups=0,addedWords=0;
   grps.forEach(function(g){if(!existingGids.includes(g.id)){data.groups.push(g);addedGroups++;}});
-  var existingWids=data.words.map(function(w){return w.id;});
-  wds.forEach(function(w){if(!existingWids.includes(w.id)){data.words.push(w);addedWords++;}});
+  var targetGids2=grps.map(function(g){return g.id;});
+  data.words=data.words.filter(function(w){return !targetGids2.includes(w.gid);});
+  wds.forEach(function(w){data.words.push(w);addedWords++;});
   saveData();
   if(!data.categories)data.categories=[];
   var existingCat=data.categories.find(function(c){return c.id==='cat-yds-pk';});
